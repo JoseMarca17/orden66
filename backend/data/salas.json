@@ -1,0 +1,48 @@
+[
+  {
+    "id": "S1",
+    "capacidad": 80,
+    "formatos": [
+      "2D"
+    ]
+  },
+  {
+    "id": "S2",
+    "capacidad": 80,
+    "formatos": [
+      "2D"
+    ]
+  },
+  {
+    "id": "S3",
+    "capacidad": 140,
+    "formatos": [
+      "2D",
+      "3D"
+    ]
+  },
+  {
+    "id": "S4",
+    "capacidad": 140,
+    "formatos": [
+      "2D",
+      "3D"
+    ]
+  },
+  {
+    "id": "S5",
+    "capacidad": 240,
+    "formatos": [
+      "2D",
+      "3D"
+    ]
+  },
+  {
+    "id": "S6",
+    "capacidad": 200,
+    "formatos": [
+      "3D",
+      "XD"
+    ]
+  }
+]

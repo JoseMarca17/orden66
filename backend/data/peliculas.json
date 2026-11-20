@@ -1,0 +1,110 @@
+[
+  {
+    "id": "P01",
+    "titulo": "La Estrella Perdida",
+    "duracion": 95,
+    "clasificacion": "TP",
+    "formato": "2D",
+    "tipo": "familiar_animada",
+    "semana_cartelera": 1
+  },
+  {
+    "id": "P02",
+    "titulo": "Guardianes del Bosque",
+    "duracion": 105,
+    "clasificacion": "TP",
+    "formato": "3D",
+    "tipo": "familiar_animada",
+    "semana_cartelera": 2
+  },
+  {
+    "id": "P03",
+    "titulo": "Planeta de Papel",
+    "duracion": 100,
+    "clasificacion": "TP",
+    "formato": "2D",
+    "tipo": "familiar_animada",
+    "semana_cartelera": 3
+  },
+  {
+    "id": "P04",
+    "titulo": "Titán Cósmico",
+    "duracion": 150,
+    "clasificacion": "+13",
+    "formato": "XD",
+    "tipo": "superheroes_accion",
+    "semana_cartelera": 1
+  },
+  {
+    "id": "P05",
+    "titulo": "Héroes del Amanecer",
+    "duracion": 140,
+    "clasificacion": "+13",
+    "formato": "3D",
+    "tipo": "superheroes_accion",
+    "semana_cartelera": 2
+  },
+  {
+    "id": "P06",
+    "titulo": "Código Invencible",
+    "duracion": 125,
+    "clasificacion": "+13",
+    "formato": "2D",
+    "tipo": "superheroes_accion",
+    "semana_cartelera": 3
+  },
+  {
+    "id": "P07",
+    "titulo": "La Última Señal",
+    "duracion": 110,
+    "clasificacion": "+18",
+    "formato": "2D",
+    "tipo": "otra_extranjera",
+    "semana_cartelera": 1
+  },
+  {
+    "id": "P08",
+    "titulo": "Ciudad de Niebla",
+    "duracion": 130,
+    "clasificacion": "+13",
+    "formato": "2D",
+    "tipo": "otra_extranjera",
+    "semana_cartelera": 2
+  },
+  {
+    "id": "P09",
+    "titulo": "Horizonte Azul",
+    "duracion": 120,
+    "clasificacion": "+13",
+    "formato": "3D",
+    "tipo": "otra_extranjera",
+    "semana_cartelera": 1
+  },
+  {
+    "id": "P10",
+    "titulo": "Ecos de Medianoche",
+    "duracion": 135,
+    "clasificacion": "+18",
+    "formato": "2D",
+    "tipo": "otra_extranjera",
+    "semana_cartelera": 3
+  },
+  {
+    "id": "P11",
+    "titulo": "Voces de Bolivia",
+    "duracion": 115,
+    "clasificacion": "+13",
+    "formato": "2D",
+    "tipo": "nacional",
+    "semana_cartelera": 2
+  },
+  {
+    "id": "P12",
+    "titulo": "El Camino de Sal",
+    "duracion": 98,
+    "clasificacion": "TP",
+    "formato": "2D",
+    "tipo": "nacional",
+    "semana_cartelera": 1
+  }
+]
