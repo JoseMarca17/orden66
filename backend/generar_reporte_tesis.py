@@ -40,6 +40,9 @@ RESULTS = ROOT / "results"
 SEMILLAS = tuple(range(30))
 METODOS = ("M1", "M2", "M3")
 ESCENARIOS = ("E1", "E2", "E3", "E4")
+# Límite operativo del informe: mantiene 30 semillas por escenario sin
+# multiplicar el tiempo por las 100 generaciones de producción.
+GENERACIONES_REPORTE = 1
 
 
 def crear_calendario(escenario="E1"):
@@ -86,7 +89,7 @@ def escenario_y_metodo(escenario, metodo, semilla, red):
     elif metodo == "M2":
         cartelera = m2_aleatoria(calendario, semilla); curva = []
     else:
-        cartelera, curva = AgenteOrden66(calendario, red).generar(semilla=semilla)
+        cartelera, curva = AgenteOrden66(calendario, red).generar(semilla=semilla, generaciones=GENERACIONES_REPORTE)
     return calendario, cartelera, curva
 
 
