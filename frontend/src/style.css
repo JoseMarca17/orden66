@@ -347,7 +347,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ───────── Modales ───────── */
 .modal-fondo { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(12, 1, 5, .78); backdrop-filter: blur(3px); }
-.modal { position: relative; width: min(580px, 100%); max-height: calc(100vh - 32px); overflow: auto; border-radius: 14px; background: var(--tarjeta); border: 1px solid var(--dorado-fino); box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+.modal { position: relative; width: min(580px, 100%); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; border-radius: 14px; background: var(--tarjeta); border: 1px solid var(--dorado-fino); box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
 .modal .cerrar { position: absolute; top: 12px; right: 12px; z-index: 3; }
 .detalle-pelicula .badge-formato { right: 60px; }
 .detalle-cuerpo { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 14px; }
@@ -363,6 +363,23 @@ h1, h2, h3, p { margin: 0; }
 .formulario input:focus, .formulario select:focus { border-color: var(--dorado-fino); outline: none; }
 .formulario label.subir { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px; border: 1px dashed var(--borde-tenue); border-radius: 10px; color: var(--dorado); }
 .formulario label.subir input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0; color: var(--texto-2); }
+
+/* ───────── Cartelera pública (#/publico) ───────── */
+.enlace-publico { margin-top: 18px; padding: 10px 14px; border-radius: 9px; border: 1px dashed var(--dorado-fino); color: var(--dorado); font-size: 13px; font-weight: 600; text-decoration: none; text-align: center; }
+.enlace-publico:hover { background: rgba(245, 197, 66, .08); }
+.app-publica { min-height: 100vh; }
+.encabezado-publico { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding: 16px 48px; background: rgba(22, 2, 9, .78); border-bottom: 1px solid #4a0a1c; }
+.encabezado-publico .marca { padding: 0; text-decoration: none; }
+.encabezado-publico-fecha { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--texto-2); }
+.encabezado-publico-fecha svg { color: var(--dorado-fino); }
+.filtros-pildoras { display: flex; flex-wrap: wrap; gap: 8px; }
+.filtros-pildoras button { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--tarjeta-borde); background: var(--tarjeta); color: var(--texto-2); font-size: 13px; font-weight: 600; cursor: pointer; transition: border-color .15s, color .15s; }
+.filtros-pildoras button:hover { border-color: var(--dorado-fino); color: var(--texto); }
+.filtros-pildoras button.activo { background: var(--dorado); border-color: var(--dorado); color: var(--vino-profundo); }
+.filtros-pildoras button:focus-visible { outline: 2px solid var(--dorado); outline-offset: 2px; }
+.publico-ver { margin-top: auto; }
+.aviso-edad { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--vino-claro); background: rgba(163, 18, 47, .22); color: var(--crema); font-size: 14px; font-weight: 600; }
+.aviso-edad svg { color: var(--dorado); }
 
 /* ───────── Responsive ───────── */
 @media (max-width: 1180px) {
@@ -381,6 +398,7 @@ h1, h2, h3, p { margin: 0; }
   .marco-cine { display: none; }
   .resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grilla-evaluacion { grid-template-columns: 1fr; }
+  .encabezado-publico { padding: 14px 16px; }
 }
 @media (max-width: 560px) {
   .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -399,6 +417,8 @@ h1, h2, h3, p { margin: 0; }
   .mapa-butacas.compacta { --butaca: 24px; }
   .mapa-butacas { --gap-x: 4px; }
   .datos-funcion { grid-template-columns: 1fr; }
+  .modal-fondo { padding: 8px; }
+  .modal { max-height: calc(100dvh - 16px); border-radius: 12px; }
   .migas { font-size: 10px; letter-spacing: .1em; }
   .fila-letra { font-size: 12px; width: 1.6em; }
   .formulario-grilla { grid-template-columns: 1fr; }

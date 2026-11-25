@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Armchair, BarChart3, CalendarDays, Film } from 'lucide-react';
@@ -8,9 +8,11 @@ import { VistaCartelera } from './components/VistaCartelera';
 import { PaginaSala, VistaSalas } from './components/VistaSalas';
 import { VistaCatalogo } from './components/VistaCatalogo';
 import { VistaEvaluacion } from './components/VistaEvaluacion';
+import { CarteleraPublica, EncabezadoPublico } from './components/VistaPublica';
+import { CLAVE_CARTELERA, guardarCartelera, leerCartelera } from './lib/almacen';
 import { API, catalogoInicial, indiceHoy, useAhora } from './lib/dominio';
 import type { Catalogo, Funcion, Pelicula, Vista } from './lib/dominio';
-import { hashSalas, leerRuta } from './lib/ruta';
+import { hashPublico, hashSalas, leerRuta } from './lib/ruta';
 
 const MENU: [Vista, LucideIcon, string][] = [['cartelera', CalendarDays, 'Cartelera'], ['salas', Armchair, 'Salas'], ['catalogo', Film, 'Catálogo'], ['evaluacion', BarChart3, 'Evaluación']];
 
@@ -19,10 +21,11 @@ function App() {
   const [ruta, setRuta] = useState(leerRuta);
   const vista = ruta.vista;
   const [dia, setDia] = useState(() => ruta.dia ?? indiceHoy(new Date()));
-  const [estado, setEstado] = useState('Lista para generar');
+  const [guardada] = useState(leerCartelera);
+  const [estado, setEstado] = useState(() => guardada ? `${guardada.funciones.length} funciones · guardada el ${new Date(guardada.generada).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })}` : 'Lista para generar');
   const [generando, setGenerando] = useState(false);
-  const [funciones, setFunciones] = useState<Funcion[]>([]);
-  const [convergencia, setConvergencia] = useState<number[]>([]);
+  const [funciones, setFunciones] = useState<Funcion[]>(() => guardada?.funciones ?? []);
+  const [convergencia, setConvergencia] = useState<number[]>(() => guardada?.convergencia ?? []);
   const [catalogo, setCatalogo] = useState<Catalogo>(catalogoInicial);
   const [guardando, setGuardando] = useState(false);
 
@@ -34,6 +37,26 @@ function App() {
   }, []);
   useEffect(() => { if (ruta.dia !== null) setDia(ruta.dia); }, [ruta.dia]);
   useEffect(() => { window.scrollTo(0, 0); }, [ruta.vista, ruta.salaId]);
+  // La página `#/publico/pelicula/<id>` ya no existe: se redirige a `#/publico` con el modal de esa película abierto.
+  const [peliculaPedida, setPeliculaPedida] = useState<string | null>(null);
+  const atenderPedida = useCallback(() => setPeliculaPedida(null), []);
+  useEffect(() => {
+    if (ruta.vista !== 'publico' || !ruta.peliculaId) return;
+    setPeliculaPedida(ruta.peliculaId);
+    window.history.replaceState(null, '', hashPublico(ruta.dia ?? dia));
+    setRuta(leerRuta());
+  }, [ruta, dia]);
+  // Si otra pestaña (el admin) genera una cartelera nueva, esta pestaña la toma sin recargar.
+  useEffect(() => {
+    const alGuardar = (e: StorageEvent) => {
+      if (e.key !== CLAVE_CARTELERA) return;
+      const nueva = leerCartelera();
+      setFunciones(nueva?.funciones ?? []);
+      setConvergencia(nueva?.convergencia ?? []);
+    };
+    window.addEventListener('storage', alGuardar);
+    return () => window.removeEventListener('storage', alGuardar);
+  }, []);
 
   const navegar = (hash: string, reemplazar = false) => {
     if (reemplazar) { window.history.replaceState(null, '', hash); setRuta(leerRuta(hash)); }
@@ -43,6 +66,7 @@ function App() {
   const cambiarDia = (nuevo: number) => {
     setDia(nuevo);
     if (vista === 'salas') navegar(hashSalas(nuevo, ruta.salaId), true);
+    if (vista === 'publico') navegar(hashPublico(nuevo), true);
   };
 
   useEffect(() => { fetch(`${API}/api/peliculas`).then((r) => r.ok ? r.json() : []).then((peliculas: Catalogo) => { if (peliculas.length) setCatalogo(peliculas); }).catch(() => undefined); }, []);
@@ -55,7 +79,7 @@ function App() {
       while (!terminado) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const trabajo = await (await fetch(`${API}/api/jobs/${job_id}`)).json(); setEstado(`${trabajo.estado} · ${trabajo.progreso ?? 0}%`);
-        if (trabajo.estado === 'completado') { setFunciones(trabajo.resultado.funciones); setConvergencia(trabajo.resultado.convergencia); setEstado(`${trabajo.resultado.funciones.length} funciones generadas`); terminado = true; }
+        if (trabajo.estado === 'completado') { setFunciones(trabajo.resultado.funciones); setConvergencia(trabajo.resultado.convergencia); guardarCartelera(trabajo.resultado.funciones, trabajo.resultado.convergencia); setEstado(`${trabajo.resultado.funciones.length} funciones generadas`); terminado = true; }
         if (trabajo.estado === 'error') throw new Error(trabajo.error);
       }
     } catch (error) { setEstado(`Error: ${error instanceof Error ? error.message : 'API no disponible'}`); }
@@ -73,6 +97,17 @@ function App() {
     finally { setGuardando(false); }
   }
 
+  if (vista === 'publico') {
+    return (
+      <div className="app-publica">
+        <EncabezadoPublico ahora={ahora} />
+        <main className="contenido">
+          <CarteleraPublica catalogo={catalogo} funciones={funciones} dia={dia} setDia={cambiarDia} ahora={ahora} peliculaPedida={peliculaPedida} atenderPedida={atenderPedida} />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <aside className="lateral">
@@ -85,6 +120,7 @@ function App() {
             <a key={clave} href={clave === 'salas' ? hashSalas(dia) : `#/${clave}`} className={vista === clave ? 'activo' : ''} aria-current={vista === clave ? 'page' : undefined}><Icono size={18} />{etiqueta}</a>
           ))}
         </nav>
+        <a className="enlace-publico" href="#/publico" target="_blank" rel="noopener">Ver cartelera pública ↗</a>
         <div className="nota-motor"><span className="punto-dorado" /> Motor operativo<br /><small>PSR · RB · AG</small></div>
       </aside>
       <main className="contenido">
