@@ -6,6 +6,7 @@ import { Letrero } from './Letrero';
 import { ChipsHorario } from './ChipsHorario';
 import { API, DIAS, UMBRAL_RIESGO, duracionTexto, etiquetaTipo, fechaDia, gradienteTipo, prediccion } from '../lib/dominio';
 import type { Catalogo, Funcion, Pelicula } from '../lib/dominio';
+import { urlPoster } from '../lib/posters';
 
 type Props = { catalogo: Catalogo; funciones: Funcion[]; convergencia: number[]; dia: number; setDia: (dia: number) => void; estado: string; generando: boolean; generar: () => void; ahora: Date };
 
@@ -77,10 +78,17 @@ export function VistaCartelera({ catalogo, funciones, convergencia, dia, setDia,
   );
 }
 
+/**
+ * Póster de una película. Prioridad: el subido desde la API, luego el local `/posters/<id>.jpg`;
+ * si ninguno carga, queda el degradado por género. Sin `alto` mantiene la proporción 2:3.
+ */
 export function Poster({ pelicula, alto }: { pelicula: Pelicula; alto?: number }) {
+  const [fallidas, setFallidas] = useState<string[]>([]);
+  const fuentes = [pelicula.poster ? `${API}${pelicula.poster}` : null, urlPoster(pelicula.id)];
+  const src = fuentes.find((f): f is string => !!f && !fallidas.includes(f));
   return (
-    <div className="poster" style={{ background: gradienteTipo(pelicula.tipo), height: alto }}>
-      {pelicula.poster && <img src={`${API}${pelicula.poster}`} alt="" />}
+    <div className="poster" style={{ background: gradienteTipo(pelicula.tipo), height: alto, aspectRatio: alto ? 'auto' : undefined }}>
+      {src && <img key={src} src={src} alt="" loading="lazy" decoding="async" onError={() => setFallidas((a) => [...a, src])} />}
       <span className="badge-clasif">{pelicula.clasificacion}</span>
       <span className="badge-formato">{pelicula.formato}</span>
       <div className="poster-pie">

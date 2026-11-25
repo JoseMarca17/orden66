@@ -24,7 +24,7 @@ export function VistaCatalogo({ catalogo, guardarPelicula, guardando }: Props) {
       <section className="grilla-catalogo">
         {filtradas.map((p) => (
           <article className="tarjeta-catalogo" key={p.id}>
-            <Poster pelicula={p} alto={220} />
+            <Poster pelicula={p} />
             <div className="catalogo-info">
               <p className="pelicula-meta">{p.id} · {etiquetaTipo(p.tipo)} · {duracionTexto(p.duracion)}</p>
             </div>
