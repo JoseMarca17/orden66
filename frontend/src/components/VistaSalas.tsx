@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Armchair, ArrowLeft, Play } from 'lucide-react';
 import { SelectorDias } from './SelectorDias';
 import { DIAS, JORNADA, SALAS, estadoSala, fechaDia, fin, hora, minutoReferencia, prediccion, salaPorId } from '../lib/dominio';
 import type { Funcion } from '../lib/dominio';
 import { hashSalas } from '../lib/ruta';
+import { anchoFila, contarButacas, planoDeSala } from '../lib/planosSalas';
+import type { PlanoSala } from '../lib/planosSalas';
 
 type Props = { funciones: Funcion[]; dia: number; setDia: (dia: number) => void; ahora: Date; generar: () => void; generando: boolean };
 
@@ -76,6 +78,12 @@ export function PaginaSala({ salaId, funciones, dia, setDia, ahora, generar, gen
   const funcs = useMemo(() => funcionesDeSala(funciones, dia, salaId), [funciones, dia, salaId]);
   const minuto = minutoReferencia(ahora, dia);
   const [elegida, setElegida] = useState<Funcion | undefined>();
+  const scrollMapa = useRef<HTMLDivElement>(null);
+  // Si el plano es más ancho que el recuadro, arranca centrado (se ve el eje de la sala y ambos costados).
+  useEffect(() => {
+    const el = scrollMapa.current;
+    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, [salaId, elegida]);
   // Al cambiar de día o regenerar la cartelera, vuelve a la próxima función de la sala.
   useEffect(() => setElegida(funcs.find((f) => fin(f) > minutoReferencia(new Date(), dia)) ?? funcs[0]), [funcs, dia]);
   const pred = elegida ? prediccion(elegida) : null;
@@ -106,13 +114,15 @@ export function PaginaSala({ salaId, funciones, dia, setDia, ahora, generar, gen
     );
   }
 
+  const plano = planoDeSala(sala);
   return (
     <div className="pagina-sala">
       {navegacion}
 
       <header className="encabezado-sala">
         <h1>SALA {sala.id}</h1>
-        <p>{sala.formatos.join(' / ')} · {sala.filas} filas × {sala.asientos} asientos · {sala.capacidad} butacas</p>
+        <p className="plano-descripcion">{plano.descripcion}</p>
+        <p>{sala.formatos.join(' / ')} · {plano.filas.length} filas · {contarButacas(plano)} butacas</p>
         <p className="encabezado-dia">{fecha}</p>
       </header>
       <SelectorDias dia={dia} setDia={setDia} ahora={ahora} sobrio />
@@ -161,10 +171,10 @@ export function PaginaSala({ salaId, funciones, dia, setDia, ahora, generar, gen
               {pred.estimada && <p className="nota">La API no envía la predicción por función; se muestra la de su red bayesiana sin entrenar (probabilidades uniformes).</p>}
 
               <section className="sala-mapa" aria-label="Mapa de butacas">
-                <div className="mapa-scroll">
+                <div className="mapa-scroll" ref={scrollMapa}>
                   <div className="mapa-lienzo">
                     <div className="pantalla"><span>PANTALLA</span></div>
-                    <MapaButacas filas={sala.filas} asientos={sala.asientos} ocupadas={pred.espectadores} />
+                    <MapaButacas plano={plano} ocupadas={pred.espectadores} />
                   </div>
                 </div>
                 <div className="leyenda-butacas">
@@ -181,9 +191,10 @@ export function PaginaSala({ salaId, funciones, dia, setDia, ahora, generar, gen
 }
 
 /** Ícono de butaca: respaldo, asiento y apoyabrazos. */
-function Butaca({ className }: { className?: string }) {
+function Butaca({ className, titulo }: { className?: string; titulo?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      {titulo && <title>{titulo}</title>}
       <path d="M6.5 3h11A2.5 2.5 0 0 1 20 5.5V13H4V5.5A2.5 2.5 0 0 1 6.5 3Z" />
       <rect x="1.5" y="10" width="3.5" height="9" rx="1.5" />
       <rect x="19" y="10" width="3.5" height="9" rx="1.5" />
@@ -194,35 +205,68 @@ function Butaca({ className }: { className?: string }) {
   );
 }
 
-/** Mapa visual: llena primero el centro y las filas medias/traseras. No representa ventas reales. */
-function MapaButacas({ filas, asientos, ocupadas }: { filas: number; asientos: number; ocupadas: number }) {
+/** Semiancho (en butacas) de la zona central del plano: el bloque del medio, o la fila entera si tiene pasillo al centro. */
+function semianchoCentral(plano: PlanoSala) {
+  let maximo = 0;
+  for (const fila of plano.filas) {
+    if (fila.length === 1) continue;
+    const ancho = fila.length % 2 === 1 ? fila[(fila.length - 1) / 2] : anchoFila(fila);
+    maximo = Math.max(maximo, ancho / 2);
+  }
+  return maximo || Math.max(...plano.filas.map(anchoFila)) / 2;
+}
+
+/**
+ * Mapa visual del plano de la sala. Las butacas ocupadas son una estimación (espectadores esperados):
+ * primero el bloque central en filas medias y traseras, luego los costados y adelante. No representa ventas reales.
+ */
+function MapaButacas({ plano, ocupadas }: { plano: PlanoSala; ocupadas: number }) {
   const ocupadasSet = useMemo(() => {
-    const centro = (asientos - 1) / 2;
+    const filas = plano.filas.length;
     const filaIdeal = (filas - 1) * 0.65;
+    const semiCentral = semianchoCentral(plano);
+    const semiMaximo = Math.max(...plano.filas.map(anchoFila)) / 2;
     const todas: { clave: string; puntaje: number }[] = [];
-    for (let r = 0; r < filas; r++) {
-      for (let c = 0; c < asientos; c++) {
-        const lateral = Math.abs(c - centro) / asientos;
-        const profundidad = Math.abs(r - filaIdeal) / filas + (r < filaIdeal ? 0.25 * (filaIdeal - r) / filas : 0);
-        todas.push({ clave: `${r}-${c}`, puntaje: lateral + 1.2 * profundidad });
-      }
-    }
+    plano.filas.forEach((fila, r) => {
+      const inicio = -anchoFila(fila) / 2;
+      let pos = 0;
+      fila.forEach((bloque, b) => {
+        for (let c = 0; c < bloque; c++) {
+          const x = Math.abs(inicio + pos + 0.5);
+          const lateral = x / (2 * semiMaximo);
+          const fueraDelCentro = x > semiCentral ? 0.35 : 0;
+          const profundidad = Math.abs(r - filaIdeal) / filas + (r < filaIdeal ? 0.25 * (filaIdeal - r) / filas : 0);
+          todas.push({ clave: `${r}-${b}-${c}`, puntaje: lateral + fueraDelCentro + 1.2 * profundidad });
+          pos++;
+        }
+        pos++; // pasillo
+      });
+    });
     todas.sort((a, b) => a.puntaje - b.puntaje);
     return new Set(todas.slice(0, Math.max(0, Math.min(ocupadas, todas.length))).map((x) => x.clave));
-  }, [filas, asientos, ocupadas]);
+  }, [plano, ocupadas]);
 
-  const mitad = Math.ceil(asientos / 2);
+  const anchoMaximo = Math.max(...plano.filas.map((f) => f.reduce((a, b) => a + b, 0)));
   const letra = (r: number) => String.fromCharCode(65 + r);
   return (
-    <div className={`mapa-butacas ${asientos >= 20 ? 'compacta' : 'amplia'}`} style={{ gridTemplateColumns: `auto repeat(${mitad}, var(--butaca)) var(--pasillo) repeat(${asientos - mitad}, var(--butaca)) auto` }}>
-      {Array.from({ length: filas }, (_, r) => [
-        <span key={`l${r}`} className="fila-letra">{letra(r)}</span>,
-        ...Array.from({ length: asientos }, (_, c) => {
-          const celda = <Butaca key={`${r}-${c}`} className={`butaca${ocupadasSet.has(`${r}-${c}`) ? ' ocupada' : ''}`} />;
-          return c === mitad ? [<span key={`p${r}`} className="pasillo" />, celda] : [celda];
-        }).flat(),
-        <span key={`r${r}`} className="fila-letra">{letra(r)}</span>,
-      ])}
+    <div className={`mapa-butacas ${anchoMaximo >= 20 ? 'compacta' : 'amplia'}`}>
+      {plano.filas.map((fila, r) => {
+        let numero = 0;
+        return (
+          <div key={r} className="fila-butacas">
+            <span className="fila-letra">{letra(r)}</span>
+            {fila.map((bloque, b) => [
+              b > 0 && <span key={`p${b}`} className="pasillo" />,
+              ...Array.from({ length: bloque }, (_, c) => {
+                numero++;
+                const ocupada = ocupadasSet.has(`${r}-${b}-${c}`);
+                return <Butaca key={`${b}-${c}`} className={`butaca${ocupada ? ' ocupada' : ''}`} titulo={`${letra(r)}-${numero}${ocupada ? ' · ocupada (estimación)' : ''}`} />;
+              }),
+            ])}
+            <span className="fila-letra">{letra(r)}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }

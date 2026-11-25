@@ -254,6 +254,8 @@ h1, h2, h3, p { margin: 0; }
 .migas [aria-current] { color: var(--dorado); }
 .encabezado-sala h1 { font-family: var(--titulos); font-weight: 400; font-size: clamp(56px, 7vw, 88px); line-height: .9; letter-spacing: .04em; color: var(--dorado); text-shadow: 0 0 22px rgba(245, 197, 66, .2); }
 .encabezado-sala p { margin-top: 10px; font-size: 15px; color: var(--texto-2); }
+.encabezado-sala .plano-descripcion { margin-top: 8px; font-size: 14px; font-style: italic; color: var(--dorado-claro); }
+.encabezado-sala .plano-descripcion + p { margin-top: 2px; }
 .encabezado-sala .encabezado-dia { margin-top: 4px; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dorado-claro); }
 .acciones-vacio { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
 .acciones-vacio .btn-dorado { margin-top: 0; }
@@ -289,11 +291,14 @@ h1, h2, h3, p { margin: 0; }
   filter: drop-shadow(0 8px 18px rgba(255, 250, 243, .5)) drop-shadow(0 2px 4px rgba(255, 224, 138, .35));
 }
 .pantalla span { display: block; margin-top: -10px; font-size: 13px; font-weight: 700; letter-spacing: .6em; color: var(--texto-2); }
-.mapa-butacas { --pasillo: 34px; display: grid; align-items: center; gap: 8px 6px; }
+/* Cada fila se centra sobre el mismo eje: las filas anchas sobresalen a los costados. */
+.mapa-butacas { --pasillo: var(--butaca); --gap-x: 6px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .mapa-butacas.amplia { --butaca: 40px; }   /* salas de 80 y 140 */
-.mapa-butacas.compacta { --butaca: 30px; gap: 7px 5px; } /* salas de 200 y 240 */
-.fila-letra { font-family: var(--titulos); font-size: 18px; color: var(--texto-2); padding: 0 8px; text-align: center; }
-.pasillo { display: block; }
+.mapa-butacas.compacta { --butaca: 30px; --gap-x: 5px; gap: 7px; } /* salas con filas de 20 o más */
+.fila-butacas { display: flex; align-items: center; gap: var(--gap-x); }
+.fila-butacas .butaca { flex: none; width: var(--butaca); }
+.fila-letra { flex: none; width: 2.2em; font-family: var(--titulos); font-size: 18px; color: var(--texto-2); text-align: center; }
+.pasillo { display: block; flex: none; width: var(--pasillo); }
 .butaca { display: block; width: 100%; height: auto; color: var(--butaca-libre); stroke: var(--borde-tenue); stroke-width: 1; overflow: visible; }
 .butaca.ocupada { color: var(--dorado); stroke: var(--dorado-fino); }
 .leyenda-butacas { display: flex; justify-content: center; gap: 26px; margin-top: 22px; font-size: 13px; color: var(--texto-2); }
@@ -392,10 +397,10 @@ h1, h2, h3, p { margin: 0; }
   .sala-mapa { padding: 22px 12px 18px; }
   .mapa-butacas.amplia { --butaca: 30px; }
   .mapa-butacas.compacta { --butaca: 24px; }
-  .mapa-butacas { --pasillo: 18px; }
+  .mapa-butacas { --gap-x: 4px; }
   .datos-funcion { grid-template-columns: 1fr; }
   .migas { font-size: 10px; letter-spacing: .1em; }
-  .fila-letra { font-size: 12px; padding: 0 3px; }
+  .fila-letra { font-size: 12px; width: 1.6em; }
   .formulario-grilla { grid-template-columns: 1fr; }
   .detalle-dia { grid-template-columns: 1fr; }
   .encabezado-sobrio h1, .encabezado-vista h1 { font-size: 40px; }
