@@ -69,6 +69,19 @@ function App() {
     if (vista === 'publico') navegar(hashPublico(nuevo), true);
   };
 
+  // Si este navegador no tiene cartelera guardada, trae la última que generó la API.
+  useEffect(() => {
+    if (guardada) return;
+    fetch(`${API}/api/cartelera/ultima`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((ultima: { fecha: string; funciones: Funcion[]; convergencia: number[] } | null) => {
+        if (!ultima?.funciones?.length || leerCartelera()) return;
+        setFunciones(ultima.funciones); setConvergencia(ultima.convergencia ?? []);
+        guardarCartelera(ultima.funciones, ultima.convergencia ?? [], ultima.fecha);
+        setEstado(`${ultima.funciones.length} funciones · última generada en la API`);
+      })
+      .catch(() => undefined);
+  }, [guardada]);
   useEffect(() => { fetch(`${API}/api/peliculas`).then((r) => r.ok ? r.json() : []).then((peliculas: Catalogo) => { if (peliculas.length) setCatalogo(peliculas); }).catch(() => undefined); }, []);
 
   async function generar() {

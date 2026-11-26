@@ -17,8 +17,8 @@ export function leerCartelera(): CarteleraGuardada | null {
   }
 }
 
-export function guardarCartelera(funciones: Funcion[], convergencia: number[]): void {
-  const datos: CarteleraGuardada = { generada: new Date().toISOString(), funciones, convergencia };
+export function guardarCartelera(funciones: Funcion[], convergencia: number[], generada = new Date().toISOString()): void {
+  const datos: CarteleraGuardada = { generada, funciones, convergencia };
   try {
     window.localStorage.setItem(CLAVE_CARTELERA, JSON.stringify(datos));
   } catch {

@@ -2,8 +2,17 @@ import { useEffect, useState } from 'react';
 
 export type Vista = 'cartelera' | 'salas' | 'catalogo' | 'evaluacion';
 export type Pelicula = { id: string; titulo: string; duracion: number; clasificacion: string; formato: string; tipo: string; semana_cartelera: number; poster?: string | null };
-/** Forma en que la API entrega cada función (`f.__dict__` en backend/api.py). */
-export type Funcion = { pelicula: Pelicula; sala: string; dia: number; inicio: number; espectadores?: number | null; ocupacion_esperada?: number | null; probabilidades?: number[] | null };
+/** P(baja, media, alta) por función, como la envía la API. */
+export type Probabilidades = { baja: number; media: number; alta: number };
+/**
+ * Forma en que la API entrega cada función (`serializar_funcion` en backend/api.py).
+ * Las carteleras guardadas antes de este cambio pueden traer `probabilidades` como arreglo o no traerla.
+ */
+export type Funcion = {
+  pelicula: Pelicula; sala: string; dia: number; inicio: number;
+  ocupacion_esperada?: number | null; espectadores_esperados?: number | null;
+  probabilidades?: Probabilidades | number[] | null; en_riesgo?: boolean; simultanea?: number;
+};
 export type Catalogo = Pelicula[];
 export type SalaInfo = { id: string; capacidad: number; formatos: string[]; filas: number; asientos: number };
 
@@ -25,19 +34,29 @@ export const salaPorId = (id: string) => SALAS.find((s) => s.id === id);
 export const APERTURA = 600;
 export const JORNADA = 840; // 10:00 → 24:00
 export const LIMPIEZA = 20;
-export const UMBRAL_RIESGO = 0.2;
-const VALOR_CLASE = [0.15, 0.45, 0.8]; // igual que RedBayesiana.ocupacion_esperada
+/** Igual que config.UMBRAL_RIESGO del backend: una función está en riesgo si P(baja) > 0.5. */
+export const UMBRAL_RIESGO = 0.5;
+const VALOR_CLASE = [0.15, 0.45, 0.8]; // igual que config.VALORES_CLASE
 /** Lo que devuelve la red bayesiana de la API sin entrenar (Laplace con conteos en cero). */
 export const PRIOR_UNIFORME = [1 / 3, 1 / 3, 1 / 3];
 
-export type Prediccion = { probs: number[]; ocupacion: number; espectadores: number; capacidad: number; estimada: boolean };
+export type Prediccion = { probs: number[]; ocupacion: number; espectadores: number; capacidad: number; enRiesgo: boolean; estimada: boolean };
+
+function comoArreglo(p: Funcion['probabilidades']): number[] | null {
+  if (!p) return null;
+  if (Array.isArray(p)) return p.length === 3 ? p : null;
+  return [p.baja, p.media, p.alta];
+}
 
 /** Predicción de la RB para una función. Usa los campos de la API si llegan; si no, el prior uniforme. */
 export function prediccion(f: Funcion): Prediccion {
   const capacidad = salaPorId(f.sala)?.capacidad ?? 0;
-  const probs = f.probabilidades && f.probabilidades.length === 3 ? f.probabilidades : PRIOR_UNIFORME;
+  const recibidas = comoArreglo(f.probabilidades);
+  const probs = recibidas ?? PRIOR_UNIFORME;
   const ocupacion = f.ocupacion_esperada ?? probs.reduce((acc, p, i) => acc + p * VALOR_CLASE[i], 0);
-  return { probs, ocupacion, espectadores: Math.round(capacidad * ocupacion), capacidad, estimada: f.ocupacion_esperada == null && !f.probabilidades };
+  const espectadores = f.espectadores_esperados ?? Math.round(capacidad * ocupacion);
+  const enRiesgo = f.en_riesgo ?? probs[0] > UMBRAL_RIESGO;
+  return { probs, ocupacion, espectadores, capacidad, enRiesgo, estimada: f.ocupacion_esperada == null && !recibidas };
 }
 
 export const hora = (minutos: number) => `${String(Math.floor(minutos / 60) % 24).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`;

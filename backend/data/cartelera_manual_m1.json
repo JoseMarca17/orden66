@@ -1,76 +1,845 @@
 {
+  "descripcion": "Cartelera manual M1: misma secuencia por sala todos los días (ver PLAN_M1 en core/baselines.py).",
   "funciones": [
     {
-      "pelicula_id": "P01",
-      "sala": "S1",
-      "dia": 0,
-      "inicio": 600
-    },
-    {
       "pelicula_id": "P02",
-      "sala": "S2",
-      "dia": 1,
-      "inicio": 600
-    },
-    {
-      "pelicula_id": "P03",
-      "sala": "S3",
-      "dia": 2,
-      "inicio": 600
+      "sala": "S6",
+      "dia": 0,
+      "inicio": 660
     },
     {
       "pelicula_id": "P04",
-      "sala": "S4",
-      "dia": 3,
-      "inicio": 600
+      "sala": "S6",
+      "dia": 0,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 0,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 0,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 0,
+      "inicio": 630
     },
     {
       "pelicula_id": "P05",
       "sala": "S5",
-      "dia": 4,
-      "inicio": 600
+      "dia": 0,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 0,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 0,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 0,
+      "inicio": 630
     },
     {
       "pelicula_id": "P06",
-      "sala": "S6",
-      "dia": 5,
-      "inicio": 600
+      "sala": "S3",
+      "dia": 0,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
+      "dia": 0,
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 0,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 0,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 0,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 0,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 0,
+      "inicio": 660
     },
     {
       "pelicula_id": "P07",
       "sala": "S1",
-      "dia": 6,
-      "inicio": 1080
+      "dia": 0,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 0,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 0,
+      "inicio": 960
     },
     {
       "pelicula_id": "P08",
       "sala": "S2",
       "dia": 0,
-      "inicio": 600
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
+      "sala": "S6",
+      "dia": 1,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 1,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 1,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 1,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 1,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 1,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 1,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 1,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 1,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 1,
+      "inicio": 900
     },
     {
       "pelicula_id": "P09",
       "sala": "S3",
       "dia": 1,
-      "inicio": 600
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 1,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 1,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 1,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 1,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 1,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 1,
+      "inicio": 1110
     },
     {
       "pelicula_id": "P10",
-      "sala": "S4",
+      "sala": "S1",
+      "dia": 1,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 1,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 1,
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
+      "sala": "S6",
+      "dia": 2,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 2,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 2,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 2,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 2,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 2,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 2,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 2,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 2,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 2,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
       "dia": 2,
       "inicio": 1080
     },
     {
-      "pelicula_id": "P11",
-      "sala": "S5",
-      "dia": 3,
-      "inicio": 600
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 2,
+      "inicio": 1260
     },
     {
       "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 2,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 2,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 2,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 2,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 2,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 2,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 2,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 2,
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
+      "sala": "S6",
+      "dia": 3,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 3,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 3,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 3,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 3,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 3,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 3,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 3,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 3,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 3,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
+      "dia": 3,
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 3,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 3,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 3,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 3,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 3,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 3,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 3,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 3,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 3,
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
       "sala": "S6",
       "dia": 4,
-      "inicio": 600
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 4,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 4,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 4,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 4,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 4,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 4,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 4,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 4,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 4,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
+      "dia": 4,
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 4,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 4,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 4,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 4,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 4,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 4,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 4,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 4,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 4,
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
+      "sala": "S6",
+      "dia": 5,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 5,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 5,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 5,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 5,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 5,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 5,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 5,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 5,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 5,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
+      "dia": 5,
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 5,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 5,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 5,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 5,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 5,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 5,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 5,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 5,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 5,
+      "inicio": 1140
+    },
+    {
+      "pelicula_id": "P02",
+      "sala": "S6",
+      "dia": 6,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 6,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 6,
+      "inicio": 1050
+    },
+    {
+      "pelicula_id": "P04",
+      "sala": "S6",
+      "dia": 6,
+      "inicio": 1230
+    },
+    {
+      "pelicula_id": "P01",
+      "sala": "S5",
+      "dia": 6,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 6,
+      "inicio": 810
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S5",
+      "dia": 6,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P05",
+      "sala": "S5",
+      "dia": 6,
+      "inicio": 1170
+    },
+    {
+      "pelicula_id": "P03",
+      "sala": "S3",
+      "dia": 6,
+      "inicio": 630
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S3",
+      "dia": 6,
+      "inicio": 900
+    },
+    {
+      "pelicula_id": "P09",
+      "sala": "S3",
+      "dia": 6,
+      "inicio": 1080
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S3",
+      "dia": 6,
+      "inicio": 1260
+    },
+    {
+      "pelicula_id": "P12",
+      "sala": "S4",
+      "dia": 6,
+      "inicio": 840
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S4",
+      "dia": 6,
+      "inicio": 990
+    },
+    {
+      "pelicula_id": "P06",
+      "sala": "S4",
+      "dia": 6,
+      "inicio": 1200
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S1",
+      "dia": 6,
+      "inicio": 660
+    },
+    {
+      "pelicula_id": "P07",
+      "sala": "S1",
+      "dia": 6,
+      "inicio": 1110
+    },
+    {
+      "pelicula_id": "P10",
+      "sala": "S1",
+      "dia": 6,
+      "inicio": 1290
+    },
+    {
+      "pelicula_id": "P11",
+      "sala": "S2",
+      "dia": 6,
+      "inicio": 960
+    },
+    {
+      "pelicula_id": "P08",
+      "sala": "S2",
+      "dia": 6,
+      "inicio": 1140
     }
   ]
 }

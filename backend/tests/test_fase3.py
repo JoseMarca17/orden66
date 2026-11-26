@@ -14,7 +14,7 @@ def registro(clase):
 
 def test_tabla_y_suavizado_laplace():
     red = RedBayesiana()
-    assert red.conteos.shape == (3, 3, 2, 2, 4, 3, 3, 2, 3)
+    assert red.conteos.shape == (3, 3, 3, 2, 2, 4, 3, 3, 2)
     assert np.allclose(red.probabilidades(registro(0)), [1 / 3] * 3)
     red.entrenar([registro("alta")] * 2)
     assert red.probabilidades(registro(0))[2] > red.probabilidades(registro(0))[0]

@@ -10,15 +10,17 @@ from .baselines import m1_manual, m2_aleatoria
 from .genetic_algo import utilidad
 from .simulator import ocupacion_real
 from .validator import porcentaje_restricciones
+from .models import simultaneas_de
 
 
 def evaluar_cartelera(cartelera, calendario, red, semilla=0, escenario=None):
-    esperados = sum(red.esperados(f, calendario) for f in cartelera.funciones)
+    simultaneas = simultaneas_de(cartelera.funciones)
+    esperados = sum(red.esperados(f, calendario, s) for f, s in zip(cartelera.funciones, simultaneas))
     reales = []
-    for i, funcion in enumerate(cartelera.funciones):
-        reales.append(ocupacion_real(funcion, calendario, semilla + i, estreno_fuerte=escenario == "E4") * next(s.capacidad for s in calendario.salas if s.id == funcion.sala))
+    for i, (funcion, simultanea) in enumerate(zip(cartelera.funciones, simultaneas)):
+        reales.append(ocupacion_real(funcion, calendario, semilla + i, estreno_fuerte=escenario == "E4", simultaneas=simultanea) * next(s.capacidad for s in calendario.salas if s.id == funcion.sala))
     ocupacion = np.mean([x / next(s.capacidad for s in calendario.salas if s.id == f.sala) for x, f in zip(reales, cartelera.funciones)])
-    return {"esperados": float(esperados), "reales": float(sum(reales)), "ocupacion_promedio": float(ocupacion), "funciones_baja_20": float(np.mean([red.ocupacion_esperada(f, calendario) < .2 for f in cartelera.funciones])), "restricciones": porcentaje_restricciones(cartelera, calendario), "utilidad": utilidad(cartelera, calendario, red)}
+    return {"esperados": float(esperados), "reales": float(sum(reales)), "ocupacion_promedio": float(ocupacion), "funciones_baja_20": float(np.mean([red.ocupacion_esperada(f, calendario, s) < .2 for f, s in zip(cartelera.funciones, simultaneas)])), "funciones_riesgo": float(np.mean([red.prediccion(f, calendario, s)["en_riesgo"] for f, s in zip(cartelera.funciones, simultaneas)])), "restricciones": porcentaje_restricciones(cartelera, calendario), "utilidad": utilidad(cartelera, calendario, red)}
 
 
 def ejecutar_experimentos(calendario, red=None, semillas=range(30), destino="results/resultados_experimentos.csv", generaciones=None):

@@ -4,7 +4,7 @@ import { MarcoLuces } from './MarcoLuces';
 import { SelectorDias } from './SelectorDias';
 import { Letrero } from './Letrero';
 import { ChipsHorario } from './ChipsHorario';
-import { API, DIAS, UMBRAL_RIESGO, duracionTexto, etiquetaTipo, fechaDia, gradienteTipo, prediccion } from '../lib/dominio';
+import { API, DIAS, duracionTexto, etiquetaTipo, fechaDia, gradienteTipo, prediccion } from '../lib/dominio';
 import type { Catalogo, Funcion, Pelicula } from '../lib/dominio';
 import { urlPoster } from '../lib/posters';
 
@@ -17,7 +17,7 @@ export function VistaCartelera({ catalogo, funciones, convergencia, dia, setDia,
   const delDia = useMemo(() => funciones.filter((f) => f.dia === dia).sort((a, b) => a.inicio - b.inicio), [funciones, dia]);
   const predicciones = useMemo(() => delDia.map(prediccion), [delDia]);
   const esperadosDia = predicciones.reduce((acc, p) => acc + p.espectadores, 0);
-  const enRiesgo = predicciones.filter((p) => p.ocupacion < UMBRAL_RIESGO).length;
+  const enRiesgo = predicciones.filter((p) => p.enRiesgo).length;
   const utilidad = convergencia.length ? convergencia[convergencia.length - 1] : null;
   const hayCartelera = funciones.length > 0;
 
@@ -45,7 +45,7 @@ export function VistaCartelera({ catalogo, funciones, convergencia, dia, setDia,
         <div className="tarjeta-dato"><span>Utilidad U(C)</span><b>{utilidad === null ? '—' : formatoNumero(utilidad)}</b><small>Semana completa · AG</small></div>
         <div className="tarjeta-dato"><span>Espectadores esperados</span><b>{hayCartelera ? formatoNumero(esperadosDia) : '—'}</b><small>{DIAS[dia]} · red bayesiana</small></div>
         <div className="tarjeta-dato"><span>Funciones del día</span><b>{hayCartelera ? delDia.length : '—'}</b><small>{hayCartelera ? `${new Set(delDia.map((f) => f.sala)).size} de 6 salas activas` : 'Sin cartelera generada'}</small></div>
-        <div className="tarjeta-dato"><span>Funciones en riesgo</span><b>{hayCartelera ? enRiesgo : '—'}</b><small>Ocupación esperada &lt; 20 %</small></div>
+        <div className="tarjeta-dato"><span>Funciones en riesgo</span><b>{hayCartelera ? enRiesgo : '—'}</b><small>P(baja) &gt; 50 %</small></div>
       </div>
 
       <h2 className="titulo-seccion">EN EXHIBICIÓN</h2>

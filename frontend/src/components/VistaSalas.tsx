@@ -174,7 +174,7 @@ export function PaginaSala({ salaId, funciones, dia, setDia, ahora, generar, gen
                 <div className="mapa-scroll" ref={scrollMapa}>
                   <div className="mapa-lienzo">
                     <div className="pantalla"><span>PANTALLA</span></div>
-                    <MapaButacas plano={plano} ocupadas={pred.espectadores} />
+                    <MapaButacas plano={plano} ocupadas={pred.espectadores} semilla={`${elegida.dia}-${elegida.sala}-${elegida.inicio}`} />
                   </div>
                 </div>
                 <div className="leyenda-butacas">
@@ -220,8 +220,24 @@ function semianchoCentral(plano: PlanoSala) {
  * Mapa visual del plano de la sala. Las butacas ocupadas son una estimación (espectadores esperados):
  * primero el bloque central en filas medias y traseras, luego los costados y adelante. No representa ventas reales.
  */
-function MapaButacas({ plano, ocupadas }: { plano: PlanoSala; ocupadas: number }) {
+/** Generador pseudoaleatorio determinista (mulberry32) sembrado con un texto. */
+function aleatorioCon(semilla: string) {
+  let h = 2166136261;
+  for (let i = 0; i < semilla.length; i++) h = Math.imul(h ^ semilla.charCodeAt(i), 16777619);
+  return () => {
+    h = (h + 0x6d2b79f5) | 0;
+    let t = Math.imul(h ^ (h >>> 15), 1 | h);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Variación leve del orden de llenado: misma función (día + sala + hora) → mismo mapa. */
+const VARIACION_MAPA = 0.18;
+
+function MapaButacas({ plano, ocupadas, semilla }: { plano: PlanoSala; ocupadas: number; semilla: string }) {
   const ocupadasSet = useMemo(() => {
+    const azar = aleatorioCon(semilla);
     const filas = plano.filas.length;
     const filaIdeal = (filas - 1) * 0.65;
     const semiCentral = semianchoCentral(plano);
@@ -236,7 +252,7 @@ function MapaButacas({ plano, ocupadas }: { plano: PlanoSala; ocupadas: number }
           const lateral = x / (2 * semiMaximo);
           const fueraDelCentro = x > semiCentral ? 0.35 : 0;
           const profundidad = Math.abs(r - filaIdeal) / filas + (r < filaIdeal ? 0.25 * (filaIdeal - r) / filas : 0);
-          todas.push({ clave: `${r}-${b}-${c}`, puntaje: lateral + fueraDelCentro + 1.2 * profundidad });
+          todas.push({ clave: `${r}-${b}-${c}`, puntaje: lateral + fueraDelCentro + 1.2 * profundidad + VARIACION_MAPA * azar() });
           pos++;
         }
         pos++; // pasillo
@@ -244,7 +260,7 @@ function MapaButacas({ plano, ocupadas }: { plano: PlanoSala; ocupadas: number }
     });
     todas.sort((a, b) => a.puntaje - b.puntaje);
     return new Set(todas.slice(0, Math.max(0, Math.min(ocupadas, todas.length))).map((x) => x.clave));
-  }, [plano, ocupadas]);
+  }, [plano, ocupadas, semilla]);
 
   const anchoMaximo = Math.max(...plano.filas.map((f) => f.reduce((a, b) => a + b, 0)));
   const letra = (r: number) => String.fromCharCode(65 + r);

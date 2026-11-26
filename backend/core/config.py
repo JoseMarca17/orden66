@@ -10,6 +10,20 @@ MIN_FUNCIONES_PELICULA = 4
 MAX_FUNCIONES_DIA = 8
 MAX_FUNCIONES_SEMANA = 30
 
+# Funciones simultáneas: otra función de la misma película, el mismo día, en otra sala,
+# que empieza a VENTANA_SIMULTANEA minutos o menos. Se reparten el público (×FACTOR_SIMULTANEA).
+VENTANA_SIMULTANEA = 60
+FACTOR_SIMULTANEA = 0.65
+# El historial simulado se agrupa en "semanas" de este tamaño (el objetivo de relleno del PSR)
+# para poder calcular qué funciones son simultáneas entre sí.
+FUNCIONES_POR_SEMANA_HISTORIAL = 140
+# Calendario de cada semana del historial: cada día es feriado con esta probabilidad, y
+# una fracción de las semanas tiene promoción de lunes a miércoles. Así la red ve ejemplos
+# de feriados y promociones (antes nunca los veía y en E2/E3 predecía el prior uniforme).
+PROB_FERIADO_HISTORIAL = 0.08
+PROB_SEMANA_PROMOCION_HISTORIAL = 0.15
+DIAS_PROMOCION_HISTORIAL = (0, 1, 2)
+
 POBLACION_AG = 50
 GENERACIONES_AG = 100
 PARADA_SIN_MEJORA = 25
@@ -18,6 +32,11 @@ P_MUTACION = 0.2
 ELITISMO = 2
 TORNEO_K = 3
 LAMBDA = 25.0
+# Una función está "en riesgo" (y U(C) resta LAMBDA) cuando la red le asigna P(baja) > UMBRAL_RIESGO.
+# Antes se penalizaba la ocupación esperada < 0.20, pero esa esperanza nunca baja de 0.15
+# (valor de la clase "baja") y casi no se activaba.
+UMBRAL_RIESGO = 0.5
+VALORES_CLASE = (0.15, 0.45, 0.80)  # ocupación representativa de baja, media y alta
 
 TIPOS_DIA = ("laborable", "viernes", "fin_de_semana")
 FRANJAS = ("matine", "tarde", "noche")

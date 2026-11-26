@@ -6,18 +6,19 @@ import random
 from . import config
 from .bayesian_net import RedBayesiana
 from .csp_solver import generar_cartelera_valida, reparar
-from .models import Calendario, Cartelera, Funcion
+from .models import Calendario, Cartelera, Funcion, simultaneas_de
 from .validator import validar
 
 
 def utilidad(cartelera: Cartelera, calendario: Calendario, red: RedBayesiana) -> float:
+    """U(C) = espectadores esperados − λ × funciones en riesgo (P(baja) > UMBRAL_RIESGO)."""
     valor = 0.0
-    bajas = 0
-    for funcion in cartelera.funciones:
-        esperado = red.esperados(funcion, calendario)
-        valor += esperado
-        bajas += red.ocupacion_esperada(funcion, calendario) < 0.20
-    return valor - config.LAMBDA * bajas
+    en_riesgo = 0
+    for funcion, simultanea in zip(cartelera.funciones, simultaneas_de(cartelera.funciones)):
+        prediccion = red.prediccion(funcion, calendario, simultanea)
+        valor += prediccion["esperados"]
+        en_riesgo += prediccion["en_riesgo"]
+    return valor - config.LAMBDA * en_riesgo
 
 
 class AlgoritmoGenetico:
@@ -72,16 +73,17 @@ class AlgoritmoGenetico:
             return original
         return cartelera
 
+    def poblacion_inicial(self, fijas=(), dadas=()) -> list[Cartelera]:
+        """Población diversa: las carteleras dadas y el resto generadas por el PSR con semillas
+        distintas (sin repetir), todas respetando ``fijas``."""
+        poblacion = [deepcopy(c) for c in dadas][:config.POBLACION_AG]
+        faltan = config.POBLACION_AG - len(poblacion)
+        for semilla in self.rng.sample(range(1_000_000), faltan):
+            poblacion.append(generar_cartelera_valida(self.calendario, semilla, fijas=fijas))
+        return poblacion
+
     def optimizar(self, poblacion_inicial=None, fijas=()):
-        if poblacion_inicial:
-            poblacion = [deepcopy(c) for c in poblacion_inicial]
-        else:
-            base = generar_cartelera_valida(self.calendario, self.rng.randrange(1_000_000), fijas=fijas)
-            poblacion = [deepcopy(base)]
-            for _ in range(config.POBLACION_AG - 1):
-                poblacion.append(generar_cartelera_valida(self.calendario, self.rng.randrange(1_000_000), fijas=fijas))
-        while len(poblacion) < config.POBLACION_AG:
-            poblacion.append(deepcopy(poblacion[0]))
+        poblacion = self.poblacion_inicial(fijas, poblacion_inicial or ())
         mejor = max(poblacion, key=self._evaluar)
         curva = [self._evaluar(mejor)]
         sin_mejora = 0

@@ -1,11 +1,12 @@
 """Simulador oculto de demanda y generador de historial de ventas."""
 
+from dataclasses import replace
 from pathlib import Path
 import csv
 import random
 import numpy as np
 from . import config
-from .models import Calendario, Cartelera, Funcion
+from .models import Calendario, Cartelera, Funcion, calcular_simultaneas
 
 
 def _tipo_dia(dia: int) -> str:
@@ -16,7 +17,9 @@ def _franja(inicio: int) -> str:
     return "matine" if inicio <= 839 else "tarde" if inicio <= 1139 else "noche"
 
 
-def ocupacion_real(funcion: Funcion, calendario: Calendario, semilla: int = 0, estreno_fuerte: bool = False) -> float:
+def ocupacion_real(funcion: Funcion, calendario: Calendario, semilla: int = 0, estreno_fuerte: bool = False, simultaneas: int = 0) -> float:
+    """Ocupación "verdadera" de una función. ``simultaneas`` = 1 si en la misma cartelera hay otra
+    función de la misma película, el mismo día, en otra sala y a 60 min o menos (ver ``calcular_simultaneas``)."""
     rng = np.random.default_rng(semilla)
     demanda = config.DEMANDA_BASE[funcion.pelicula.tipo]
     demanda *= {"laborable": 1.0, "viernes": 1.2, "fin_de_semana": 1.4}[_tipo_dia(funcion.dia)]
@@ -29,8 +32,7 @@ def ocupacion_real(funcion: Funcion, calendario: Calendario, semilla: int = 0, e
     if funcion.dia in calendario.promociones:
         demanda *= 1.5
     demanda *= {1: 1.4, 2: 1.0, 3: 0.7}[min(funcion.pelicula.semana_cartelera, 3)]
-    simultaneas = sum(1 for otra in [] if otra == funcion.pelicula.id)  # El agente no observa esta función.
-    demanda *= 0.65**simultaneas
+    demanda *= config.FACTOR_SIMULTANEA ** int(bool(simultaneas))
     if estreno_fuerte and funcion.pelicula.id == "P04":
         demanda *= 1.5
     sala = next(s for s in calendario.salas if s.id == funcion.sala)
@@ -38,10 +40,18 @@ def ocupacion_real(funcion: Funcion, calendario: Calendario, semilla: int = 0, e
 
 
 def generar_historial(calendario: Calendario, n: int = 20000, semilla: int = 0, destino: str | Path | None = None) -> list[dict]:
-    """Genera registros reproducibles y cubre combinaciones mediante muestreo estratificado."""
+    """Genera registros reproducibles y cubre combinaciones mediante muestreo estratificado.
+
+    Las funciones se sortean igual que antes (mismo orden de llamadas al generador) y luego se agrupan
+    en semanas de ``FUNCIONES_POR_SEMANA_HISTORIAL``: dentro de cada semana se calcula qué funciones son
+    simultáneas, con la misma regla que usan la red y el simulador.
+
+    Cada semana sortea además sus feriados (``PROB_FERIADO_HISTORIAL`` por día) y si tiene promoción
+    (``PROB_SEMANA_PROMOCION_HISTORIAL``, en ``DIAS_PROMOCION_HISTORIAL``), con un generador aparte
+    derivado de la misma semilla, para no alterar el sorteo de las funciones."""
     rng = random.Random(semilla)
-    registros = []
-    for i in range(n):
+    funciones = []
+    for _ in range(n):
         pelicula = rng.choice(calendario.peliculas)
         sala = rng.choice(calendario.salas)
         if pelicula.formato not in sala.formatos:
@@ -50,8 +60,22 @@ def generar_historial(calendario: Calendario, n: int = 20000, semilla: int = 0, 
         f = Funcion(pelicula, sala.id, rng.randrange(7), rng.choice(config.INICIOS))
         if pelicula.clasificacion == "+18":
             f.inicio = rng.randrange(1080, 1321, 30)
-        ocup = ocupacion_real(f, calendario, semilla=semilla + i)
-        registros.append({"pelicula_id": pelicula.id, "sala": sala.id, "dia": f.dia, "inicio": f.inicio, "feriado": int(f.dia in calendario.feriados), "promocion": int(f.dia in calendario.promociones), "ocupacion": ocup, "espectadores": round(sala.capacidad * ocup)})
+        funciones.append(f)
+    rng_calendario = random.Random(f"{semilla}-calendario")
+    simultaneas, calendarios = [], []
+    tamano = config.FUNCIONES_POR_SEMANA_HISTORIAL
+    for desde in range(0, n, tamano):
+        semana = funciones[desde:desde + tamano]
+        simultaneas += calcular_simultaneas([(f.pelicula.id, f.sala, f.dia, f.inicio) for f in semana])
+        feriados = {d for d in config.DIAS if rng_calendario.random() < config.PROB_FERIADO_HISTORIAL}
+        promociones = set(config.DIAS_PROMOCION_HISTORIAL) if rng_calendario.random() < config.PROB_SEMANA_PROMOCION_HISTORIAL else set()
+        calendario_semana = replace(calendario, feriados=calendario.feriados | feriados, promociones=calendario.promociones | promociones)
+        calendarios += [calendario_semana] * len(semana)
+    capacidades = {s.id: s.capacidad for s in calendario.salas}
+    registros = []
+    for i, (f, simultanea, cal) in enumerate(zip(funciones, simultaneas, calendarios)):
+        ocup = ocupacion_real(f, cal, semilla=semilla + i, simultaneas=simultanea)
+        registros.append({"pelicula_id": f.pelicula.id, "sala": f.sala, "dia": f.dia, "inicio": f.inicio, "feriado": int(f.dia in cal.feriados), "promocion": int(f.dia in cal.promociones), "simultaneas": simultanea, "ocupacion": ocup, "espectadores": round(capacidades[f.sala] * ocup)})
     if destino is not None:
         destino = Path(destino)
         destino.parent.mkdir(parents=True, exist_ok=True)
